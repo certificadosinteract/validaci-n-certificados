@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Validación de Certificados</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  padding: 40px;
+}
+.container {
+  background: white;
+  padding: 30px;
+  max-width: 500px;
+  margin: auto;
+  border-radius: 8px;
+}
+input, button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+}
+.result {
+  margin-top: 20px;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+<h2>Validación de Certificados</h2>
+
+<input type="text" id="search" placeholder="Ingrese DNI o Folio">
+<button onclick="buscar()">Buscar</button>
+
+<div class="result" id="resultado"></div>
+</div>
+
+<script>
+const urlCSV = https://docs.google.com/spreadsheets/d/e/2PACX-1vT6D5oCcn_PDfFSdPotCyMUW4mgzGCPTrgIMTJLKvcrJO0GDKIlc2nr8PdV2s4JNL2b3y6eVui_k9Kl/pub?gid=0&single=true&output=csv;
+
+function buscar() {
+  const valor = document.getElementById("search").value.trim();
+  fetch(urlCSV)
+    .then(res => res.text())
+    .then(data => {
+      const filas = data.split("\n");
+      let encontrado = false;
+
+      for (let i = 1; i < filas.length; i++) {
+        const columnas = filas[i].split(",");
+
+        if (columnas[0] === valor || columnas[1] === valor) {
+          document.getElementById("resultado").innerHTML = `
+            <p><strong>Nombre:</strong> ${columnas[2]}</p>
+            <p><strong>Curso:</strong> ${columnas[3]}</p>
+            <p><strong>Fecha:</strong> ${columnas[4]}</p>
+            <a href="${columnas[5]}" target="_blank">Ver certificado</a>
+          `;
+          encontrado = true;
+          break;
+        }
+      }
+
+      if (!encontrado) {
+        document.getElementById("resultado").innerHTML =
+          "<p>No se encontró ningún certificado.</p>";
+      }
+    });
+}
+</script>
+</body>
+</html>
