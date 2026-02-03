@@ -51,9 +51,9 @@ function buscar() {
       for (let i = 1; i < filas.length; i++) {
         const columnas = filas[i].split(",");
 
-        if (columnas[0] === valor || columnas[1] === valor) {
+        if (columnas[0] === valor || columnas[2] === valor) {
           document.getElementById("resultado").innerHTML = `
-            <p><strong>Nombre:</strong> ${columnas[2]}</p>
+            <p><strong>Nombre:</strong> ${columnas[1]}</p>
             <p><strong>Curso:</strong> ${columnas[3]}</p>
             <p><strong>Fecha:</strong> ${columnas[4]}</p>
             <a href="${columnas[5]}" target="_blank">Ver certificado</a>
