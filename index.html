@@ -3,81 +3,66 @@
 <head>
 <meta charset="UTF-8">
 <title>Validación de Certificados</title>
-
 <style>
 body {
   font-family: Arial, sans-serif;
-  background: #f2f2f2;
+  background: #f4f4f4;
+  padding: 40px;
 }
-.contenedor {
-  max-width: 520px;
-  margin: 50px auto;
-  background: #fff;
+.container {
+  background: white;
   padding: 30px;
-  border-radius: 10px;
+  max-width: 500px;
+  margin: auto;
+  border-radius: 8px;
 }
 input, button {
   width: 100%;
   padding: 10px;
   margin-top: 10px;
-  font-size: 16px;
 }
-#resultado p {
-  margin: 6px 0;
+.result {
+  margin-top: 20px;
+  
+.logo {
+  display: block;
+  margin: 0 auto 20px;
+  max-width: 150px;
 }
 </style>
 </head>
 
 <body>
+<div class="container">
+<img src="Sin título-1.png" alt="Logo del instituto" class="logo">
+<h2>Validación de Certificados</h2>
 
-<div class="contenedor">
-  <h2>Validación de Certificados</h2>
+<input type="text" id="search" placeholder="Ingrese DNI o Folio">
+<button onclick="buscar()">Buscar</button>
 
-  <input type="text" id="busqueda" placeholder="Ingrese DNI o Folio">
-  <button onclick="buscar()">Buscar</button>
-
-  <div id="resultado"></div>
+<div class="result" id="resultado"></div>
 </div>
 
 <script>
-function limpiar(texto) {
-  return texto.replace(/"/g, "").trim();
-}
+const urlCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT6D5oCcn_PDfFSdPotCyMUW4mgzGCPTrgIMTJLKvcrJO0GDKIlc2nr8PdV2s4JNL2b3y6eVui_k9Kl/pub?output=csv"
 
 function buscar() {
-  const valor = document.getElementById("busqueda").value.trim();
-  const resultado = document.getElementById("resultado");
-
-  if (!valor) {
-    resultado.innerHTML = "Ingrese un DNI";
-    return;
-  }
-
-  const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT6D5oCcn_PDfFSdPotCyMUW4mgzGCPTrgIMTJLKvcrJO0GDKIlc2nr8PdV2s4JNL2b3y6eVui_k9Kl/pub?output=csv";
-
-  fetch(url)
+  const valor = document.getElementById("search").value.trim();
+  fetch(urlCSV)
     .then(res => res.text())
-    .then(csv => {
-      const filas = csv.split("\n");
+    .then(data => {
+      const filas = data.split("\n");
       let encontrado = false;
 
       for (let i = 1; i < filas.length; i++) {
-        const columnas = filas[i].split(";");
+        const columnas = filas[i].split(",");
 
-        const dni = limpiar(columnas[0] || "");
-        const nombre = limpiar(columnas[1] || "");
-        const folio = limpiar(columnas[2] || "");
-        const curso = limpiar(columnas[3] || "");
-        const periodo = limpiar(columnas[4] || "");
-        const link = limpiar(columnas[5] || "");
-
-        if (dni === valor || folio === valor) {
-          resultado.innerHTML = `
-            <p><strong>Nombre:</strong> ${nombre}</p>
-            <p><strong>Curso:</strong> ${curso}</p>
-            <p><strong>Periodo:</strong> ${periodo}</p>
-            <p><strong>Folio:</strong> ${folio}</p>
-            <a href="${link}" target="_blank">Ver certificado</a>
+        if (columnas[0] === valor || columnas[2] === valor) {
+          document.getElementById("resultado").innerHTML = `
+            <p><strong>Nombre:</strong> ${columnas[1]}</p>
+            <p><strong>Curso:</strong> ${columnas[3]}</p>
+            <p><strong>Fecha:</strong> ${columnas[4]}</p>
+            <a href="${columnas[5]}" target="_blank">Ver certificado</a>
           `;
           encontrado = true;
           break;
@@ -85,15 +70,11 @@ function buscar() {
       }
 
       if (!encontrado) {
-        resultado.innerHTML = "Certificado no encontrado";
+        document.getElementById("resultado").innerHTML =
+          "<p>No se encontró ningún certificado.</p>";
       }
-    })
-    .catch(err => {
-      resultado.innerHTML = "Error al leer los datos";
-      console.error(err);
     });
 }
 </script>
-
 </body>
 </html>
